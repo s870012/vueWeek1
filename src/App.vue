@@ -59,6 +59,7 @@ const data = [
   },
 ]
 const drinks = ref(data)
+const isEdit = ref(false)
 
 const addQty = (id) => {
   drinks.value = drinks.value.map((drink) => {
@@ -77,12 +78,30 @@ const minusQty = (id) => {
     return drink
   })
 }
+
+const edit = () => {
+  isEdit.value = true
+}
+
+const saveEdit = (id, name) => {
+  drinks.value = drinks.value.map((drink) => {
+    if (drink.id === id) {
+      drink.name = name
+    }
+    return drink
+  })
+  isEdit.value = false
+}
+
+const closeEdit = () => {
+  isEdit.value = false
+}
 </script>
 
 <template>
   <div class="container">
-    <table>
-      <thead>
+    <table class="table my-3">
+      <thead class="text-center">
         <tr>
           <th scope="col">品項</th>
           <th scope="col">描述</th>
@@ -91,14 +110,33 @@ const minusQty = (id) => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="drink in drinks" :key="drink.id">
-          <td>{{ drink.name }}</td>
+        <tr v-for="drink in drinks" :key="drink.id" class="text-center">
+          <td>
+            <p
+              v-on:dblclick="edit"
+              :style="{ display: isEdit ? 'none' : 'block' }"
+              class="mb-0 hover"
+            >
+              {{ drink.name }}
+            </p>
+            <div :style="{ display: isEdit ? 'block' : 'none' }">
+              <input type="text" v-model="drink.name" class="me-2" />
+              <button v-on:click="saveEdit(drink.id, drink.name)" class="me-2">儲存</button>
+              <button v-on:click="closeEdit">取消</button>
+            </div>
+          </td>
           <td>{{ drink.description }}</td>
           <td>{{ drink.price }}</td>
           <td>
-            <button v-on:click="minusQty(drink.id)" :disabled="drink.qty < 1">-</button>
+            <button
+              v-on:click="minusQty(drink.id)"
+              :disabled="drink.qty < 1"
+              class="btn btn-outline-danger"
+            >
+              -
+            </button>
             {{ drink.qty }}
-            <button v-on:click="addQty(drink.id)">+</button>
+            <button v-on:click="addQty(drink.id)" class="btn btn-outline-primary">+</button>
           </td>
         </tr>
       </tbody>
@@ -106,4 +144,8 @@ const minusQty = (id) => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.hover:hover {
+  cursor: pointer;
+}
+</style>
