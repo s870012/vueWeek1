@@ -7,6 +7,7 @@ const data = [
     description: '香濃奶茶搭配QQ珍珠',
     price: '50',
     qty: '20',
+    isEdit: false,
   },
   {
     id: 2,
@@ -14,6 +15,7 @@ const data = [
     description: '清新冬瓜配上新鮮檸檬',
     price: '45',
     qty: '18',
+    isEdit: false,
   },
   {
     id: 3,
@@ -21,6 +23,7 @@ const data = [
     description: '綠茶與檸檬的完美結合',
     price: '55',
     qty: '34',
+    isEdit: false,
   },
   {
     id: 4,
@@ -28,6 +31,7 @@ const data = [
     description: '香醇四季春茶，回甘無比',
     price: '45',
     qty: '10',
+    isEdit: false,
   },
   {
     id: 5,
@@ -35,6 +39,7 @@ const data = [
     description: '阿薩姆紅茶搭配香純鮮奶',
     price: '50',
     qty: '25',
+    isEdit: false,
   },
   {
     id: 6,
@@ -42,6 +47,7 @@ const data = [
     description: '檸檬與冰茶的新清結合',
     price: '45',
     qty: '20',
+    isEdit: false,
   },
   {
     id: 7,
@@ -49,6 +55,7 @@ const data = [
     description: '芒果與綠茶的茶特風味',
     price: '55',
     qty: '18',
+    isEdit: false,
   },
   {
     id: 8,
@@ -56,10 +63,11 @@ const data = [
     description: '抹茶的鮮奶的搭配',
     price: '60',
     qty: '20',
+    isEdit: false,
   },
 ]
 const drinks = ref(data)
-const isEdit = ref(false)
+const tempName = ref('')
 
 const addQty = (id) => {
   drinks.value = drinks.value.map((drink) => {
@@ -79,22 +87,33 @@ const minusQty = (id) => {
   })
 }
 
-const edit = () => {
-  isEdit.value = true
+const edit = (id) => {
+  drinks.value.forEach((drink) => {
+    if (drink.id === id) {
+      drink.isEdit = true
+      tempName.value = drink.name
+    }
+  })
 }
 
-const saveEdit = (id, name) => {
-  drinks.value = drinks.value.map((drink) => {
-    if (drink.id === id) {
-      drink.name = name
-    }
-    return drink
-  })
-  isEdit.value = false
+const saveEdit = (id) => {
+  if (tempName.value !== '') {
+    drinks.value = drinks.value.map((drink) => {
+      if (drink.id === id) {
+        drink.name = tempName
+      }
+      drink.isEdit = false
+      return drink
+    })
+  } else {
+    alert('品項不能空白')
+  }
 }
 
 const closeEdit = () => {
-  isEdit.value = false
+  drinks.value.forEach((drink) => {
+    drink.isEdit = false
+  })
 }
 </script>
 
@@ -113,15 +132,15 @@ const closeEdit = () => {
         <tr v-for="drink in drinks" :key="drink.id" class="text-center">
           <td>
             <p
-              v-on:dblclick="edit"
-              :style="{ display: isEdit ? 'none' : 'block' }"
+              v-on:dblclick="edit(drink.id)"
+              :style="{ display: drink.isEdit ? 'none' : 'block' }"
               class="mb-0 hover"
             >
               {{ drink.name }}
             </p>
-            <div :style="{ display: isEdit ? 'block' : 'none' }">
-              <input type="text" v-model="drink.name" class="me-2" />
-              <button v-on:click="saveEdit(drink.id, drink.name)" class="me-2">儲存</button>
+            <div :style="{ display: drink.isEdit ? 'block' : 'none' }">
+              <input type="text" v-model="tempName" class="me-2" />
+              <button v-on:click="saveEdit(drink.id)" class="me-2">儲存</button>
               <button v-on:click="closeEdit">取消</button>
             </div>
           </td>
