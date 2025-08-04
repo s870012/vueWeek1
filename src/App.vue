@@ -87,23 +87,17 @@ const minusQty = (id) => {
   })
 }
 
-const edit = (id) => {
-  drinks.value.forEach((drink) => {
-    if (drink.id === id) {
-      drink.isEdit = true
-      tempName.value = drink.name
-    }
-  })
+const edit = (drink) => {
+  const index = drinks.value.findIndex((i) => i.id === drink.id)
+  drinks.value[index].isEdit = true
+  tempName.value = drink.name
 }
 
-const saveEdit = (id) => {
+const saveEdit = (drink) => {
   if (tempName.value !== '') {
-    drinks.value = drinks.value.map((drink) => {
-      if (drink.id === id) {
-        drink.name = tempName
-      }
+    drink.name = tempName.value
+    drinks.value.forEach((drink) => {
       drink.isEdit = false
-      return drink
     })
   } else {
     alert('品項不能空白')
@@ -132,7 +126,7 @@ const closeEdit = () => {
         <tr v-for="drink in drinks" :key="drink.id" class="text-center">
           <td>
             <p
-              v-on:dblclick="edit(drink.id)"
+              v-on:dblclick="edit(drink)"
               :style="{ display: drink.isEdit ? 'none' : 'block' }"
               class="mb-0 hover"
             >
@@ -140,7 +134,7 @@ const closeEdit = () => {
             </p>
             <div :style="{ display: drink.isEdit ? 'block' : 'none' }">
               <input type="text" v-model="tempName" class="me-2" />
-              <button v-on:click="saveEdit(drink.id)" class="me-2">儲存</button>
+              <button v-on:click="saveEdit(drink)" class="me-2">儲存</button>
               <button v-on:click="closeEdit">取消</button>
             </div>
           </td>
